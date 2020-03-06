@@ -14,20 +14,16 @@ def amount_needed(tau):
      
 # Returns a tuple of numpy arrays for the x and y values to use in drawing graphs
 def build_time_series(half_life,p_nought, max_time=10):
-    ar = np.linspace(0,max_time)
-    return (ar, amount_left(half_life, p_nought, ar)) #(x,y)
+    x_array = np.linspace(0,max_time)
+    return (x_array, amount_left(half_life, p_nought, x_array)) #(x,y)
 
 #Builds a graph for decay of isotope over time.
-def do_graph(name, time_series,single=True):
+def do_graph(p_nought, time_series,name="the isotopes studied"):
     x, y = time_series
+    plt.title("Decay of " + name +" over time")
     plt.plot(x, y)
-    if single:
-        plt.title("Decay of " + name +" over time")
-    else:
-        plt.title("Decay of isotopes studied over time")
 
-  
-#Returns a tuple of inputed and calculated isotope data
+#Returns a tuple of inputted and calculated isotope data
 def get_input():
   isotope_name=input("Please enter the name of the isotope");
   half_life=float(input("Please enter the half-life of the isotope in seconds"))
@@ -50,7 +46,7 @@ while True:
   isotope, half_life,p_nought,time,time_series= data #Decomposes the tuple into its bits
   p=amount_left(half_life,p_nought,time) #Calculates the amount left at the given time
   start_amount = amount_needed(half_life)  # Calculates the starting amount.
-  do_graph(isotope, time_series) #Creates a graph
+  do_graph(p_nought, time_series, isotope) #Creates a graph
   isotopes.append((isotope,half_life,p_nought,time,time_series))#Builds the list used in doing the final graph
   #output stuff
   print ""
@@ -65,9 +61,8 @@ while True:
 
 #Processes the final list and does the graph of multiple isotopes
 for isotope in isotopes:
-  name=isotope[0]
-  time_series=isotope[4]
-  do_graph(name, time_series, False)
+  name, half_life,p_nought,time,time_series= isotope #Decomposes the tuple into its bit
+  do_graph(p_nought, time_series)
 plt.show()
 
 # Output list of isotopes studied, tweak to get commas right (yes I am that sad).
