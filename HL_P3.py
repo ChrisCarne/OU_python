@@ -69,6 +69,7 @@ while True:
 #Processes the final list and does the graphs
 #max_time=(max([x[1] for x in isotopes]))*10#returns a value used in teh x-axis of the graph based on the largest hl
 max_time=10  #using the time specified in the exercise
+plt.clf() #clears any existing graphs
 for isotope in isotopes:
     do_graph(isotope, False,max_time) #False is a flag that this is a graph of multiple isotopes
 plt.legend()
