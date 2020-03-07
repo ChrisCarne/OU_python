@@ -53,10 +53,10 @@ while True:
     isotope, half_life, p_nought, time = data  # Pulls out the pieces from teh list
     p = amount_left(half_life, p_nought, time) # Calculates the amount left at the given time
     print("")
-    print("Starting with ", p_nought, "grams of",isotope, "after", time, "seconds there will be", round(
-        p, 2), "grams remaining")
+    print(f"Starting with {p_nought} grams of {isotope} after {time} seconds there will be {round(
+        p, 2)} grams remaining")
     start_amount = amount_needed(half_life)  # Calculates the starting amount.
-    print("In order to have 5 grams left after 30 seconds you should start with", round(start_amount, 2), "grams")
+    print(f"In order to have 5 grams left after 30 seconds you should start with {round(start_amount, 2)} grams")
     print("")
     do_graph(isotopes[-1]) #builds a graph using current isotope data
     plt.show()
