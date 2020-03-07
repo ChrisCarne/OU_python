@@ -15,32 +15,28 @@ def amount_needed(tau):
     return 5*np.exp(math.log(2)*30/tau)
 
 # Returns a tuple of numpy arrays for the x and y values to use in drawing graphs
-def build_time_series(isotope,single,max_time=10):
-    name, half_life, p_nought, time = isotope #
-    ar = np.linspace(0,max_time)
-    return (ar, amount_left(half_life, p_nought, ar)) #(x,y)
+def build_time_series(half_life,p_nought, max_time):
+    x_array = np.linspace(0,max_time)
+    return (x_array, amount_left(half_life, p_nought, x_array)) #returns (x axis values,y axis values)
 
 #Builds a graph for decay of isotope over time.  
 #Trinket doesn't seem to allow legends which is a pain. Also y-axis labelling dowsnt work properly in trinket
-def do_graph(isotope, single=True, max_time=10):
-    x, y = build_time_series(isotope,single,max_time)
-    plt.plot(x, y, label=isotope[0])
-    if single:
-        plt.title("Decay of " + isotope[0]+" over time", fontweight="bold") #fontweight crashes trinket
-    else:
-        plt.title("Decay of all isotopes studied over time", fontweight="bold") #fontweight crashes trinket
+def do_graph(time_series, name):
+    x,y=time_series
+    plt.plot(x, y, label=name)
+    plt.title("Decay of " + name +" over time", fontweight="bold") #fontweight crashes trinket
     plt.xlabel("time /s")
     plt.ylabel("Amount remaining /g")#doesn't work properly in trinket
 
 # Helper function to return a list of inputted isotope data
-def get_input(isotopes):
-    isotope = input("Please enter the name of the isotope ")
-    half_life = float(
-        input("Please enter the half-life of the isotope in seconds "))
+def get_input():
+    isotope_name = input("Please enter the name of the isotope ")
+    half_life = float(input("Please enter the half-life of the isotope in seconds "))
     p_nought = float(input("Please enter the initial amount in grams "))
     time = float(input("Please enter a time in seconds "))
-    isotopes.append([isotope, half_life, p_nought, time])
-    return isotopes
+    max_time=10
+    time_series=build_time_series(half_life, p_nought, max_time)
+    return(isotope_name,half_life,p_nought,time,time_series )
 
 ####################################################################################################
 
@@ -49,17 +45,17 @@ isotopes = []
 
 # Loop to process each isotope
 while True:
-    data = get_input(isotopes)[-1]  # Gets the last inputted item from the list
-    isotope, half_life, p_nought, time = data  # Pulls out the pieces from teh list
+    data = get_input()  # Gets the last inputted item from the list
+    isotope, half_life, p_nought, time, time_series = data  # Pulls out the pieces from teh list
     p = amount_left(half_life, p_nought, time) # Calculates the amount left at the given time
     print("")
-    print(f"Starting with {p_nought} grams of {isotope} after {time} seconds there will be {round(
-        p, 2)} grams remaining")
+    print(f"Starting with {p_nought} grams of {isotope} after {time} seconds there will be {round(p, 2)} grams remaining")
     start_amount = amount_needed(half_life)  # Calculates the starting amount.
     print(f"In order to have 5 grams left after 30 seconds you should start with {round(start_amount, 2)} grams")
     print("")
-    do_graph(isotopes[-1]) #builds a graph using current isotope data
+    do_graph(time_series, isotope) #builds a graph using current isotope data
     plt.show()
+    isotopes.append([isotope, half_life, p_nought, time, time_series])
     if input("Do you want to do another isotope y/n") == "n":
         print("")
         break
@@ -67,11 +63,13 @@ while True:
         print("")
         
 #Processes the final list and does the graphs
+plt.clf()
 #max_time=(max([x[1] for x in isotopes]))*10#returns a value used in teh x-axis of the graph based on the largest hl
 max_time=10  #using the time specified in the exercise
-plt.clf() #clears any existing graphs
 for isotope in isotopes:
-    do_graph(isotope, False,max_time) #False is a flag that this is a graph of multiple isotopes
+  name, *other_stuff, time_series = isotope #Decomposes the tuple into its bits
+  do_graph(time_series, name)
+plt.title("Decay of all isotopes studied oer time")
 plt.legend()
 plt.show()
 
