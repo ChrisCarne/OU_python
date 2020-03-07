@@ -53,6 +53,7 @@ while True:
     start_amount = amount_needed(half_life)  # Calculates the starting amount.
     print(f"In order to have 5 grams left after 30 seconds you should start with {round(start_amount, 2)} grams")
     print("")
+    plt.clf()
     do_graph(time_series, isotope) #builds a graph using current isotope data
     plt.show()
     isotopes.append([isotope, half_life, p_nought, time, time_series])
