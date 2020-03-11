@@ -13,9 +13,9 @@ def calculate_rms(measured_lambda_metres, measured_intensity, T):
   model_intensity=intensity(measured_lambda_metres, T)
   sq_dev=(measured_intensity-model_intensity)**2
   mean_sum=sum(sq_dev)/len(sq_dev)
-  return (mean_sum**0.5, T)
+  return mean_sum**0.5
   
-  
+
 # Constants
 _h=6.626E-34
 _c=2.998E8
@@ -46,7 +46,7 @@ temps=[]
 
 while True:
   model_intensity=intensity(model_lambda_range_metres,temp)
-  rms=calculate_rms(measured_lambda_metres, measured_intensity, temp)[0]
+  rms=calculate_rms(measured_lambda_metres, measured_intensity, temp)
   errors.append(rms)
   temps.append(temp)
   model_intensity=intensity(model_lambda_range_metres, temp)
@@ -61,7 +61,6 @@ while True:
   plt.show()
   temp=input("Enter another temperature or type q to finish")
   if temp=="q":
-    print("OK, done")
     break
   else:
     temp=float(temp)
@@ -73,7 +72,7 @@ temp_range=np.linspace(0.1,5.0,1000,endpoint=True)
 error_array=np.array([])
     
 for temperature in temp_range:
-  t=calculate_rms(measured_lambda_metres, measured_intensity, temperature)[0]
+  t=calculate_rms(measured_lambda_metres, measured_intensity, temperature)
   error_array=np.append(error_array,t)
   
 plt.clf()
@@ -82,5 +81,4 @@ plt.xlabel("temperature /K")
 plt.ylabel("Error")
 plt.show()
 
-print(f"The backround temperature is {round(temp_range[np.where(error_array==np.min(error_array))][0],3)} degrees Kelvin")
-    
+print(f"The background temperature is {round(temp_range[np.where(error_array==np.min(error_array))][0],3)} degrees Kelvin")
