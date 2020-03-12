@@ -53,10 +53,11 @@ while True:
   print(f"Error is {rms}")
   print(f"Smallest error is {min(errors)} for a temperature of {temps[errors.index(min(errors))]}")
   plt.clf()
+  plt.title("Intensity against wavelength")
   plt.xlabel("wavelength /mm")
   plt.ylabel("Intensity /it's complicated")#doesn't work properly in trinket P2
-  plt.plot(measured_lambda,measured_intensity, label="measured")
-  plt.plot(model_lambda_range,model_intensity, label="model")
+  plt.plot(measured_lambda,measured_intensity, label="Observed")
+  plt.plot(model_lambda_range,model_intensity, label="Model: T= "+ str(temp))
   plt.legend()
   plt.show()
   temp=input("Enter another temperature or type q to finish")
@@ -65,10 +66,12 @@ while True:
   else:
     temp=float(temp)
     
-#Implements a 'brute force' algorithm for finding the temp that gives a minimum error.
-#Works on this fairly small range but not really satisfactory
+# Implements a 'brute force' algorithm for finding the temp that gives a minimum error.
+# Works on this fairly small range but not really satisfactory. NB using mupy arrays gives
+# a much faster speed than standard python lists but it still slows down pretty rapidly
+# once we use any more than accracy or range we have here.
     
-temp_range=np.linspace(0.1,5.0,1000,endpoint=True)
+temp_range=np.linspace(1,5,10000,endpoint=True)
 error_array=np.array([])
     
 for temperature in temp_range:
@@ -76,9 +79,21 @@ for temperature in temp_range:
   error_array=np.append(error_array,t)
   
 plt.clf()
+plt.subplot(211)
+plt.title("Likelihood / Error plotted against temperature")
 plt.plot(temp_range,error_array)
+plt.yticks([])
+#plt.plot(temp_range,error_array)
 plt.xlabel("temperature /K")
-plt.ylabel("Error")
+plt.ylabel("Error", color ='blue')
+
+plt.subplot(212)
+#plt.title("Error plotted against temperature")
+plt.plot(temp_range,error_array**-1, 'r')
+plt.yticks([])
+plt.ylabel("Likelihood (1/error)", color='red')
 plt.show()
 
-print(f"The background temperature is {round(temp_range[np.where(error_array==np.min(error_array))][0],3)} degrees Kelvin")
+'''
+
+print(f"The background temperature is {round(temp_range[np.where(error_array==np.min(error_array))][0],4)} degrees Kelvin")
