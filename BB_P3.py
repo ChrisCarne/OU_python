@@ -94,6 +94,8 @@ plt.yticks([])
 plt.ylabel("Likelihood (1/error)", color='red')
 plt.show()
 
-'''
+# Finds the smallest error in the error array and uses its index to return 
+# the associated temp from the temp_range array
+minimising_temp=temp_range[np.where(error_array==np.min(error_array))][0]
 
-print(f"The background temperature is {round(temp_range[np.where(error_array==np.min(error_array))][0],4)} degrees Kelvin")
+print(f"The temperature that gives the closest match to the obsered data is {round(minimising_temp,4)} degrees Kelvin")
