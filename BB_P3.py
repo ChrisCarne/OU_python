@@ -80,11 +80,10 @@ for temperature in temp_range:
   
 plt.clf()
 plt.subplot(211)
-plt.title("Likelihood / Error plotted against temperature")
+plt.title("Error / Likelihood plotted against temperature")
 plt.plot(temp_range,error_array)
 plt.yticks([])
 #plt.plot(temp_range,error_array)
-plt.xlabel("temperature /K")
 plt.ylabel("Error", color ='blue')
 
 plt.subplot(212)
@@ -92,6 +91,7 @@ plt.subplot(212)
 plt.plot(temp_range,error_array**-1, 'r')
 plt.yticks([])
 plt.ylabel("Likelihood (1/error)", color='red')
+plt.xlabel("temperature /K")
 plt.show()
 
 # Finds the smallest error in the error array and uses its index to return 
