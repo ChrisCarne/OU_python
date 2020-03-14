@@ -69,7 +69,7 @@ while True:
 # Implements a 'brute force' algorithm for finding the temp that gives a minimum error.
 # Works on this fairly small range but not really satisfactory. NB using mupy arrays gives
 # a much faster speed than standard python lists but it still slows down pretty rapidly
-# once we use any more than accracy or range we have here.
+# once we use any more than accuracy or range we have here.
     
 temp_range=np.linspace(1,5,10000,endpoint=True)
 error_array=np.array([])
