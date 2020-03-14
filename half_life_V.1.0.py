@@ -12,7 +12,7 @@ def amount_left(tau, p_nought, time):
 def amount_needed(tau):
      return 5*np.exp(math.log(2)*30/tau)
      
-# Returns a tuple of numpy arrays for the x and y values to use in drawing graphs
+# Returns a tuple of numpy arrays for the x and y values to use in drawing graphs,
 def build_time_series(half_life,p_nought, max_time):
     x = np.linspace(0,max_time) # x values 
     print half_life,p_nought, max_time
