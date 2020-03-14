@@ -43,7 +43,7 @@ def get_input():
     isotope_name=input("Please enter the name of the isotope");
     half_life=float(input("Please enter the half-life of the isotope in seconds"))
     p_nought = float(input("Please enter the initial amount in grams"))
-    time=float(input("Please enter a time in seconds"))
+    time=float(input("Please enter an elapsed time in seconds"))
     max_time=10
     time_series=build_time_series(half_life, p_nought, max_time )
     return(isotope_name,half_life,p_nought,time,time_series )
