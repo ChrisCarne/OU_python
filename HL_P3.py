@@ -37,11 +37,11 @@ def do_iso_string(istopes):
 def do_graph(time_series, name):
     x,y=time_series
     plt.plot(x, y, label=name)
-    plt.title("Decay of " + name +" over time", fontweight="bold") #fontweight crashes trinket
+    plt.title("Decay of " + name +" over time", fontweight="bold") #fontweight crashes trinket p2
     plt.xlabel("time /s")
-    plt.ylabel("Amount remaining /g")#doesn't work properly in trinket
+    plt.ylabel("Amount remaining /g")
 
-# Helper function to return a list of inputted isotope data
+# Helper function to return a tuple of inputted isotope data
 def get_input():
     isotope_name = input("Please enter the name of the isotope ")
     half_life = float(input("Please enter the half-life of the isotope in seconds "))
@@ -58,34 +58,36 @@ isotopes = []
 
 # Loop to process each isotope
 while True:
-    data = get_input()  # Gets the last inputted item from the list
-    isotope, half_life, p_nought, time, time_series = data  # Pulls out the pieces from teh list
+    data = get_input()  # Puts the info entered by teh user in a variable
+    isotope, half_life, p_nought, time, time_series = data  # Pulls out the pieces from the variable
     p = amount_left(half_life, p_nought, time) # Calculates the amount left at the given time
+    start_amount = amount_needed(half_life)  # Calculates the starting amount.
+    isotopes.append([isotope, half_life, p_nought, time, time_series]) # puts the entered data in a list 
+    # Print out some stuff
     print("")
     print(f"Starting with {p_nought} grams of {isotope} after {time} seconds there will be {round(p, 2)} grams remaining")
-    start_amount = amount_needed(half_life)  # Calculates the starting amount.
     print(f"In order to have 5 grams left after 30 seconds you should start with {round(start_amount, 2)} grams")
     print("")
+    # Plot the graph
     plt.clf() #clears any plots juust in case.
     do_graph(time_series, isotope) #builds a graph using current isotope data
     plt.show()
-    isotopes.append([isotope, half_life, p_nought, time, time_series])
+    # Go round again or finish up
     if input("Do you want to do another isotope y/n") == "n":
         print("")
         break
     else:
         print("")
         
-#Processes the final list and does the graphs
-plt.clf()
-#max_time=(max([x[1] for x in isotopes]))*10#returns a value used in teh x-axis of the graph based on the largest hl
+#Process the final list and do the graphs
 max_time=10  #using the time specified in the exercise
 for isotope in isotopes:
   name, *other_stuff, time_series = isotope #Decomposes the tuple into its bits
   do_graph(time_series, name)
-plt.title("Decay of all isotopes studied over time")
+plt.title("Decay of all isotopes studied over time", fontweight="bold")
 plt.legend()
 plt.show()
 
 #iso_string=do_iso_string(istopes)
+#print "Istopes studied" do_iso_string(isotopes)
 print(f"Isotopes studied : {do_iso_string(isotopes)}")
