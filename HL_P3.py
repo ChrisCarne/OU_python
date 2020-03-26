@@ -1,93 +1,108 @@
-import math
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+import matplotlib.lines as mlines
+import matplotlib as mpl
 
-#uncomment for use in jupyter notebook
-#%matplotlib inline 
+mpl.rcParams['mathtext.default']='regular'
 
-# functions #############################################################################################
+# Uncomment to get graphs working right in Jupyter
+#%matplotlib inline
 
-# Calculates the amount of substance remaining given half_life, initial amount and time
-def amount_left(tau, p_nought, time):
-    return p_nought*np.exp(-math.log(2)*time/tau)
+# Calculates the radiation intensity from the wavelength and temperature
+# using the formula given in the notes.
+def intensity(wavelength, T):
+  a=(2*_h*(_c**2))/(wavelength**5)
+  b = (_h*_c)/(wavelength*_k*T)
+  c=(np.exp(b)-1)**-1
+  return a*c
 
-# Calculates the amount of substance needed for 5 grams to be left after 30 seconds given the half_life
-def amount_needed(tau):
-    return 5*np.exp(math.log(2)*30/tau)
+#Calcualtes teh root mean squared error between the observed data and model predictions 
+def calculate_rms(measured_lambda_metres, measured_intensity, T):
+  model_intensity=intensity(measured_lambda_metres, T)
+  sq_dev=(measured_intensity-model_intensity)**2
+  mean_sum=sum(sq_dev)/len(sq_dev)
+  return mean_sum**0.5
+  
 
-# Returns a tuple of numpy arrays for the x and y values to use in drawing graphs
-def build_time_series(half_life,p_nought, max_time):
-    x_array = np.linspace(0,max_time)
-    return (x_array, amount_left(half_life, p_nought, x_array)) #returns (x axis values,y axis values)
-    
-# Output list of isotopes studied, tweak to get commas right (yes I am that sad).
-def do_iso_string(istopes):
-  iso_string = ""
-  for n in range(len(isotopes)):
-      if n < len(isotopes)-2:
-          iso_string += isotopes[n][0]+", "
-      elif n==len(isotopes)-2:
-          iso_string+=isotopes[n][0]+" and "
-      else:
-          iso_string += isotopes[n][0]+"."
-  return iso_string
+# Constants
+_h=6.626E-34 #Planck
+_c=2.998E8 #Speed of light
+_k=1.381E-23 #temp to energy conversion factor.
 
-#Builds a graph for decay of isotope over time.  
-#Trinket doesn't seem to allow legends which is a pain. Also y-axis labelling dowsnt work properly in trinket
-def do_graph(time_series, name):
-    x,y=time_series
-    plt.plot(x, y, label=name)
-    plt.title("Decay of " + name +" over time", fontweight="bold") #fontweight crashes trinket p2
-    plt.xlabel("time /s")
-    plt.ylabel("Amount remaining /g")
+measured_lambda=np.array([4.405286344,3.676470588,3.144654088,\
+2.754820937,2.450980392,2.004008016,1.834862385,1.377410468,\
+0.881834215,0.468823254],float)
 
-# Helper function to return a tuple of inputted isotope data
-def get_input():
-    isotope_name = input("Please enter the name of the isotope ")
-    half_life = float(input("Please enter the half-life of the isotope in seconds "))
-    p_nought = float(input("Please enter the initial amount in grams "))
-    time = float(input("Please enter a time in seconds "))
-    max_time=10
-    time_series=build_time_series(half_life, p_nought, max_time)
-    return(isotope_name,half_life,p_nought,time,time_series )
+# Measured data: intensity in W m**-2 m**-1 sr**-1
+measured_intensity=np.array([3.10085E-05,5.53419E-05,8.8836E-05,\
+0.000129483,0.000176707,0.000284786,0.00034148,0.000531378,\
+0.000561909,6.16936E-05],float)
 
-####################################################################################################
+measured_lambda_metres=measured_lambda*1e-3
 
-# Initialise list to keep isotope data in
-isotopes = []
+# Define the wavelength range in millimetres
+model_lambda_range=np.linspace(0.1,5.0,50,endpoint=True)
+# convert to metres
+model_lambda_range_metres=model_lambda_range*1e-3
+model_intensity=np.array([],float)
 
-# Loop to process each isotope
+
+# Initialse a couple of lists to hold data
+errors=[]
+temps=[]
+temp=0
+
+temp=float(input("Please enter a value for T")) #asks user for a temp
+
+# main program loop
 while True:
-    data = get_input()  # Puts the info entered by teh user in a variable
-    isotope, half_life, p_nought, time, time_series = data  # Pulls out the pieces from the variable
-    p = amount_left(half_life, p_nought, time) # Calculates the amount left at the given time
-    start_amount = amount_needed(half_life)  # Calculates the starting amount.
-    isotopes.append([isotope, half_life, p_nought, time, time_series]) # puts the entered data in a list 
-    # Print out some stuff
-    print("")
-    print(f"Starting with {p_nought} grams of {isotope} after {time} seconds there will be {round(p, 2)} grams remaining")
-    print(f"In order to have 5 grams left after 30 seconds you should start with {round(start_amount, 2)} grams")
-    print("")
-    # Plot the graph
-    plt.clf() #clears any plots juust in case.
-    do_graph(time_series, isotope) #builds a graph using current isotope data
-    plt.show()
-    # Go round again or finish up
-    if input("Do you want to do another isotope y/n") == "n":
-        print("")
-        break
-    else:
-        print("")
-        
-#Process the final list and do the graphs
-max_time=10  #using the time specified in the exercise
-for isotope in isotopes:
-  name, *other_stuff, time_series = isotope #Decomposes the tuple into its bits
-  do_graph(time_series, name)
-plt.title("Decay of all isotopes studied over time", fontweight="bold")
+  model_intensity=intensity(model_lambda_range_metres,temp)
+  rms=calculate_rms(measured_lambda_metres, measured_intensity, temp)
+  errors.append(rms) #builds a list of errors
+  temps.append(temp) #and associated temperatures
+  model_intensity=intensity(model_lambda_range_metres, temp)
+  best_so_far=temps[errors.index(min(errors))] #finds the temp associated with the smallest error
+  #outputs
+  # NB Error multiplied by 1e5 to give a more convenient figure for the user
+  print(f"Error (*1e5) is {round(rms*1e5,2)}" '\n')
+  print(f"Smallest error so far is {round((min(errors)*1e5),2)} for a temperature of {best_so_far} K" '\n')
+    # go round again or stop and finish up
+  go_again=input("Enter another temperature or type q to finish")
+  if go_again=="q":
+    break
+  else:
+    temp=float(go_again)
+    
+
+plt.clf() 
+plt.title("Intensity against wavelength")
+plt.xlabel(r'$\mathrm{wavelength}$  $\mathrm{/mm}$')
+#plt.xlabel(r'$s(t) = \mathcal{A}\mathrm{sin}(2 \omega t)$')
+plt.ylabel(r'$\mathrm{Intensity}$ $\mathrm{/W }$ $\mathrm{m}^{-2}$ $\mathrm{ m}^{-1}$ $\mathrm{sr}^{-2}$')
+plt.ticklabel_format(axis="y", style="sci", useOffset= True, scilimits=(0.01,1000))
+plt.plot(measured_lambda,measured_intensity,'*', label="Observed")
+plt.plot(model_lambda_range,model_intensity, label="Model: T= "+ str(temp))
 plt.legend()
 plt.show()
 
-#iso_string=do_iso_string(istopes)
-#print "Istopes studied" do_iso_string(isotopes)
-print(f"Isotopes studied : {do_iso_string(isotopes)}")
+# Implements a 'brute force' algorithm for finding the temp that gives a minimum error.
+# Works on this fairly small range but not really satisfactory. NB using numpy arrays gives
+# a much faster speed than standard python lists but it still slows down pretty rapidly
+# once we require any more accuracy or range we have here due to the for loop.
+    
+temp_range=np.linspace(1,5,5000,endpoint=True)
+error_array=np.array([])
+    
+# builds a great big array of the error for each temp
+for temperature in temp_range:
+ t=calculate_rms(measured_lambda_metres, measured_intensity, temperature)
+ error_array=np.append(error_array,t)
+  
+
+# Finds the smallest error in the error array and uses its index to return 
+# the associated temp from the temp_range array
+minimising_temp=temp_range[np.where(error_array==np.min(error_array))][0]
+
+print(f"The temperature that gives the closest match to the obsered data is {round(minimising_temp,4)} K (5 s.f.)")
+
