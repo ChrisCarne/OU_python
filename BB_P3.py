@@ -67,7 +67,7 @@ while True:
   # pyplot stuff
   plt.clf() 
   fig= plt.figure(figsize=(10,6))
-  plt.title("Intensity against wavelength")
+  plt.title("Intensity against wavelength") 
   plt.xlabel(r'$\mathrm{wavelength}$  $\mathrm{/mm}$')
   #plt.xlabel(r'$s(t) = \mathcal{A}\mathrm{sin}(2 \omega t)$')
   plt.ylabel(r'$\mathrm{Intensity}$ $\mathrm{/W }$ $\mathrm{m}^{-2}$ $\mathrm{ m}^{-1}$ $\mathrm{sr}^{-2}$')
